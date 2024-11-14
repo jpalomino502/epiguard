@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 export default function AlertsSection({ alerts }) {
-  console.log("Alertas recibidas en AlertsSection:", alerts);
+  console.log("Alertas recibidas en AlertsSection:", alerts);  // Verificar alertas
 
   return (
     <div className="space-y-4">

@@ -4,8 +4,17 @@ import { db, collection, getDocs } from '../../firebaseConfig';
 import userIcon from '../../assets/user.svg';
 
 const MAP_LIBRARIES = ['visualization', 'geometry'];
-const mapContainerStyle = { width: '100%', height: '100%' };
-const defaultCenter = { lat: 7.1195, lng: -73.1198 };
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+const defaultCenter = {
+  lat: 7.1195,
+  lng: -73.1198,
+};
+
 const PROXIMITY_RADIUS = 500;
 
 export default function MapSection({ addAlert }) {
@@ -17,10 +26,12 @@ export default function MapSection({ addAlert }) {
   const [heatmapData, setHeatmapData] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [center, setCenter] = useState(defaultCenter);
-  const [alertedLocations, setAlertedLocations] = useState(() => {
-    const savedLocations = localStorage.getItem('alertedLocations');
-    return savedLocations ? JSON.parse(savedLocations) : {};
-  });
+  const [alertedLocations, setAlertedLocations] = useState({}); // Usar un objeto para un mejor control
+
+  useEffect(() => {
+    // Limpiar el localStorage cada vez que se recarga la página
+    localStorage.removeItem('alertedLocations'); // Esto elimina las alertas almacenadas
+  }, []); // Solo se ejecuta una vez al montar el componente
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -31,7 +42,9 @@ export default function MapSection({ addAlert }) {
           setUserLocation(location);
           setCenter(location);
         },
-        (error) => console.warn('Error al obtener la ubicación del usuario', error),
+        (error) => {
+          console.warn('Error al obtener la ubicación del usuario', error);
+        },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
@@ -72,21 +85,22 @@ export default function MapSection({ addAlert }) {
 
         const pointKey = `${point.lat()}-${point.lng()}`;
 
+        // Solo mostrar alerta si no se ha mostrado antes para esta ubicación
         if (distance < PROXIMITY_RADIUS && !alertedLocations[pointKey]) {
-          console.log("Generando alerta para la ubicación:", pointKey);
           const alertMessage = "Estás cerca de una zona de calor de epidemia";
-          
+
           if (Notification.permission === 'granted') {
             new Notification(alertMessage);
           }
-          
+
           addAlert(alertMessage);
 
+          // Almacenamos las ubicaciones alertadas en el estado y en localStorage
           const newAlertedLocations = { ...alertedLocations, [pointKey]: true };
           setAlertedLocations(newAlertedLocations);
+
+          // Opcionalmente, puedes guardar las ubicaciones alertadas en localStorage aquí si lo deseas
           localStorage.setItem('alertedLocations', JSON.stringify(newAlertedLocations));
-        } else if (alertedLocations[pointKey]) {
-          console.log(`Notificación ya mostrada para la ubicación: ${pointKey}`);
         }
       });
     }

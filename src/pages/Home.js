@@ -21,22 +21,15 @@ export default function Home() {
     }
   }, []);
 
+  // Almacena la sección activa en el localStorage cuando cambie
   useEffect(() => {
-    const savedSection = localStorage.getItem('activeSection');
-    if (savedSection && savedSection !== activeSection) {
-      setActiveSection(savedSection);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (activeSection) {
-      localStorage.setItem('activeSection', activeSection);
-    }
+    localStorage.setItem('activeSection', activeSection);
   }, [activeSection]);
 
-  // Modificamos addAlert para que esté memoizado y evite renderizados innecesarios
+  // Función de alerta optimizada, evita duplicados
   const addAlert = useCallback((alertMessage) => {
     setAlerts((prevAlerts) => {
+      // Evitar duplicados comprobando si el mensaje ya existe
       const exists = prevAlerts.some(alert => alert.message === alertMessage);
       if (!exists) {
         const newAlert = { id: Date.now(), message: alertMessage };
