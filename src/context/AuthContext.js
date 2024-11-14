@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
   const resetPassword = async (email) => {
     try {
       await sendPasswordResetEmail(auth, email);
-      alert("Correo de recuperación enviado");
+      return 'Correo de recuperación enviado. Revisa tu bandeja de entrada.';
     } catch (error) {
       console.error("Error al enviar correo de recuperación:", error);
       throw new Error(getFriendlyErrorMessage(error.code));

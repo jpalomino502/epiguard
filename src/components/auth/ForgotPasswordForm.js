@@ -3,7 +3,7 @@ import { Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ForgotPasswordForm({
-  formData, handleInputChange, handleSubmit, switchToLogin, error
+  formData, handleInputChange, handleSubmit, switchToLogin, error, successMessage
 }) {
   return (
     <motion.div
@@ -26,6 +26,7 @@ export default function ForgotPasswordForm({
             required
           />
         </div>
+
         <motion.button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300 mt-6"
@@ -34,6 +35,7 @@ export default function ForgotPasswordForm({
         >
           Enviar instrucciones
         </motion.button>
+
         {error && (
           <motion.div
             className="mt-4 text-red-500 text-sm"
@@ -44,6 +46,18 @@ export default function ForgotPasswordForm({
             {error}
           </motion.div>
         )}
+
+        {successMessage && (
+          <motion.div
+            className="mt-4 text-green-500 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {successMessage}
+          </motion.div>
+        )}
+
         <div className="mt-4 text-center">
           <button
             type="button"
