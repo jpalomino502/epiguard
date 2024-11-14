@@ -20,7 +20,7 @@ const PROXIMITY_RADIUS = 500;
 export default function MapSection({ addAlert }) {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: MAP_LIBRARIES,  // Usamos la constante aquí
+    libraries: MAP_LIBRARIES,
   });
 
   const [heatmapData, setHeatmapData] = useState([]);
