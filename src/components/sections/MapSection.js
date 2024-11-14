@@ -3,37 +3,45 @@ import { GoogleMap, useLoadScript, HeatmapLayer, Marker } from '@react-google-ma
 import { db, collection, getDocs } from '../../firebaseConfig';
 import userIcon from '../../assets/user.svg';
 
-const MAP_LIBRARIES = ['visualization', 'geometry'];
-const mapContainerStyle = { width: '100%', height: '100%' };
-const defaultCenter = { lat: 7.1195, lng: -73.1198 };
-const PROXIMITY_RADIUS = 500;
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
 
-export default function MapSection({ addAlert }) {
+const defaultCenter = {
+  lat: 7.1195,
+  lng: -73.1198,
+};
+
+const options = {
+  zoomControl: true,
+  streetViewControl: false,
+  mapTypeControl: false,
+  fullscreenControl: false,
+};
+
+export default function MapSection() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: MAP_LIBRARIES,
+    libraries: ['visualization'],
   });
 
   const [heatmapData, setHeatmapData] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [center, setCenter] = useState(defaultCenter);
-  const [alertedLocations, setAlertedLocations] = useState({}); // Mejor control de alertas
-  const [alertActive, setAlertActive] = useState(false); // Control de una sola alerta activa
 
   useEffect(() => {
-    localStorage.removeItem('alertedLocations'); // Limpia alertas almacenadas al recargar
-  }, []);
-
-  useEffect(() => {
+    // Obtener la ubicación del usuario
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          const location = { lat: latitude, lng: longitude };
-          setUserLocation(location);
-          setCenter(location);
+          setUserLocation({ lat: latitude, lng: longitude });
+          setCenter({ lat: latitude, lng: longitude });
         },
-        (error) => console.warn('Error al obtener la ubicación del usuario', error),
+        (error) => {
+          console.warn('Error al obtener la ubicación del usuario', error);
+        },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
@@ -42,6 +50,7 @@ export default function MapSection({ addAlert }) {
   }, []);
 
   useEffect(() => {
+    // Consultar puntos de calor desde Firestore
     const fetchHeatmapData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'reports'));
@@ -60,45 +69,6 @@ export default function MapSection({ addAlert }) {
     }
   }, [isLoaded]);
 
-  useEffect(() => {
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    }
-  
-    if (
-      userLocation &&
-      heatmapData.length > 0 &&
-      window.google &&
-      window.google.maps.geometry &&
-      !alertActive
-    ) {
-      heatmapData.some((point) => {
-        const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
-          new window.google.maps.LatLng(userLocation.lat, userLocation.lng),
-          point
-        );
-        const pointKey = `${point.lat()}-${point.lng()}`;
-  
-        if (distance < PROXIMITY_RADIUS && !alertedLocations[pointKey]) {
-          const alertMessage = "Estás cerca de una zona de calor de epidemia";
-
-          addAlert(alertMessage);
-          setAlertActive(true); 
-  
-          const newAlertedLocations = { ...alertedLocations, [pointKey]: true };
-          setAlertedLocations(newAlertedLocations);
-          localStorage.setItem('alertedLocations', JSON.stringify(newAlertedLocations));
-  
-          setTimeout(() => setAlertActive(false), 10000);
-  
-          return true;
-        }
-        return false;
-      });
-    }
-  }, [userLocation, heatmapData, alertedLocations, addAlert, alertActive]);
-  
-
   if (!isLoaded) return <div>Cargando mapa...</div>;
 
   return (
@@ -107,9 +77,12 @@ export default function MapSection({ addAlert }) {
         mapContainerStyle={mapContainerStyle}
         center={center}
         zoom={18}
-        options={{ zoomControl: true, streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
+        options={options}
       >
-        {heatmapData.length > 0 && <HeatmapLayer data={heatmapData} />}
+        {heatmapData.length > 0 && (
+          <HeatmapLayer data={heatmapData} />
+        )}
+
         {userLocation && (
           <Marker
             position={userLocation}
