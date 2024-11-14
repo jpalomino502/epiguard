@@ -26,7 +26,7 @@ export default function MapSection({ addAlert }) {
   const [heatmapData, setHeatmapData] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [center, setCenter] = useState(defaultCenter);
-  const [alertedLocations, setAlertedLocations] = useState(new Set()); // Para almacenar las ubicaciones ya alertadas
+  const [alertedLocations, setAlertedLocations] = useState(new Set());
 
   // Obtener la ubicación del usuario
   useEffect(() => {
