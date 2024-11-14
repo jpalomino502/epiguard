@@ -4,17 +4,8 @@ import { db, collection, getDocs } from '../../firebaseConfig';
 import userIcon from '../../assets/user.svg';
 
 const MAP_LIBRARIES = ['visualization', 'geometry'];
-
-const mapContainerStyle = {
-  width: '100%',
-  height: '100%',
-};
-
-const defaultCenter = {
-  lat: 7.1195,
-  lng: -73.1198,
-};
-
+const mapContainerStyle = { width: '100%', height: '100%' };
+const defaultCenter = { lat: 7.1195, lng: -73.1198 };
 const PROXIMITY_RADIUS = 500;
 
 export default function MapSection({ addAlert }) {
@@ -26,7 +17,10 @@ export default function MapSection({ addAlert }) {
   const [heatmapData, setHeatmapData] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [center, setCenter] = useState(defaultCenter);
-  const [alertedLocations, setAlertedLocations] = useState(new Set());
+  const [alertedLocations, setAlertedLocations] = useState(() => {
+    const savedLocations = localStorage.getItem('alertedLocations');
+    return savedLocations ? JSON.parse(savedLocations) : {};
+  });
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -37,9 +31,7 @@ export default function MapSection({ addAlert }) {
           setUserLocation(location);
           setCenter(location);
         },
-        (error) => {
-          console.warn('Error al obtener la ubicación del usuario', error);
-        },
+        (error) => console.warn('Error al obtener la ubicación del usuario', error),
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
@@ -47,7 +39,6 @@ export default function MapSection({ addAlert }) {
     }
   }, []);
 
-  // Obtener datos del mapa (puntos de calor)
   useEffect(() => {
     const fetchHeatmapData = async () => {
       try {
@@ -67,38 +58,33 @@ export default function MapSection({ addAlert }) {
     }
   }, [isLoaded]);
 
-  // Lógica de las alertas
   useEffect(() => {
-    // Pedir permiso para mostrar notificaciones
     if (Notification.permission !== 'granted') {
       Notification.requestPermission();
     }
 
     if (userLocation && heatmapData.length > 0 && window.google && window.google.maps.geometry) {
-      heatmapData.forEach((point, index) => {
+      heatmapData.forEach((point) => {
         const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
           new window.google.maps.LatLng(userLocation.lat, userLocation.lng),
           point
         );
 
-        // Crear una cadena única para la ubicación del punto de calor
         const pointKey = `${point.lat()}-${point.lng()}`;
 
-        // Verificamos si ya se ha agregado una alerta para esa ubicación
-        if (distance < PROXIMITY_RADIUS && !alertedLocations.has(pointKey)) {
+        if (distance < PROXIMITY_RADIUS && !alertedLocations[pointKey]) {
+          console.log(`Notificación cerca de la ubicación: ${pointKey}`);
           const alertMessage = "Estás cerca de una zona de calor de epidemia";
           
-          // Mostrar notificación solo si se tiene permiso
-          if (Notification.permission === 'granted') {
-            new Notification(alertMessage); // Muestra la notificación
-          }
+          addAlert(alertMessage);
 
-          addAlert(alertMessage);  // Llamamos a `addAlert` para pasar la alerta a `Home`
-          setAlertedLocations((prev) => new Set(prev).add(pointKey)); // Añadimos la ubicación a las alertas enviadas
+          const newAlertedLocations = { ...alertedLocations, [pointKey]: true };
+          setAlertedLocations(newAlertedLocations);
+          localStorage.setItem('alertedLocations', JSON.stringify(newAlertedLocations));
         }
       });
     }
-  }, [userLocation, heatmapData, alertedLocations, addAlert]);  // Aseguramos que `addAlert` se pasa como dependencia
+  }, [userLocation, heatmapData, alertedLocations, addAlert]);
 
   if (!isLoaded) return <div>Cargando mapa...</div>;
 

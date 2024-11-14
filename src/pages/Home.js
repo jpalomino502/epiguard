@@ -7,30 +7,20 @@ import ReportSection from '../components/sections/ReportSection';
 import ConfiguracionSection from '../components/sections/ConfiguracionSection';
 
 export default function Home() {
-  // Inicializar activeSection desde localStorage solo una vez
   const [activeSection, setActiveSection] = useState(() => {
     const savedSection = localStorage.getItem('activeSection');
-    return savedSection || 'map'; // Valor predeterminado si no hay savedSection
+    return savedSection || 'map';
   });
 
   const [alerts, setAlerts] = useState([]);
 
-  // Usar useEffect para cargar el valor desde localStorage solo una vez (al montar)
   useEffect(() => {
-    const savedSection = localStorage.getItem('activeSection');
-    if (savedSection && savedSection !== activeSection) {
-      setActiveSection(savedSection); // Solo actualiza si el valor es diferente
+    if (!sessionStorage.getItem('pageReloaded')) {
+      localStorage.removeItem('alertedLocations');
+      sessionStorage.setItem('pageReloaded', 'true');
     }
-  }, []); // Ejecuta solo una vez al montar el componente
+  }, []);
 
-  // Usar useEffect para guardar activeSection en localStorage solo cuando cambie
-  useEffect(() => {
-    if (activeSection) {
-      localStorage.setItem('activeSection', activeSection); // Solo guarda en localStorage si activeSection tiene un valor válido
-    }
-  }, [activeSection]); // Solo ejecuta cuando activeSection cambie
-
-  // Función para agregar alertas a la lista
   const addAlert = (alertMessage) => {
     setAlerts((prevAlerts) => [
       ...prevAlerts,
@@ -38,7 +28,6 @@ export default function Home() {
     ]);
   };
 
-  // Función para renderizar la sección activa
   const renderSection = () => {
     switch (activeSection) {
       case 'map':
