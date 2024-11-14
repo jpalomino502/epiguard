@@ -28,7 +28,6 @@ export default function MapSection({ addAlert }) {
   const [center, setCenter] = useState(defaultCenter);
   const [alertedLocations, setAlertedLocations] = useState(new Set());
 
-  // Obtener la ubicación del usuario
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
