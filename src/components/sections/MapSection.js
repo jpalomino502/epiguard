@@ -73,14 +73,20 @@ export default function MapSection({ addAlert }) {
         const pointKey = `${point.lat()}-${point.lng()}`;
 
         if (distance < PROXIMITY_RADIUS && !alertedLocations[pointKey]) {
-          console.log(`Notificación cerca de la ubicación: ${pointKey}`);
+          console.log("Generando alerta para la ubicación:", pointKey);
           const alertMessage = "Estás cerca de una zona de calor de epidemia";
+          
+          if (Notification.permission === 'granted') {
+            new Notification(alertMessage);
+          }
           
           addAlert(alertMessage);
 
           const newAlertedLocations = { ...alertedLocations, [pointKey]: true };
           setAlertedLocations(newAlertedLocations);
           localStorage.setItem('alertedLocations', JSON.stringify(newAlertedLocations));
+        } else if (alertedLocations[pointKey]) {
+          console.log(`Notificación ya mostrada para la ubicación: ${pointKey}`);
         }
       });
     }

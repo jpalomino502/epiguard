@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '../components/common/Header';
 import NavBar from '../components/common/NavBar';
 import MapSection from '../components/sections/MapSection';
@@ -21,12 +21,31 @@ export default function Home() {
     }
   }, []);
 
-  const addAlert = (alertMessage) => {
-    setAlerts((prevAlerts) => [
-      ...prevAlerts,
-      { id: Date.now(), message: alertMessage },
-    ]);
-  };
+  useEffect(() => {
+    const savedSection = localStorage.getItem('activeSection');
+    if (savedSection && savedSection !== activeSection) {
+      setActiveSection(savedSection);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeSection) {
+      localStorage.setItem('activeSection', activeSection);
+    }
+  }, [activeSection]);
+
+  // Modificamos addAlert para que esté memoizado y evite renderizados innecesarios
+  const addAlert = useCallback((alertMessage) => {
+    setAlerts((prevAlerts) => {
+      const exists = prevAlerts.some(alert => alert.message === alertMessage);
+      if (!exists) {
+        const newAlert = { id: Date.now(), message: alertMessage };
+        console.log("Alerta añadida:", newAlert);
+        return [...prevAlerts, newAlert];
+      }
+      return prevAlerts;
+    });
+  }, []);
 
   const renderSection = () => {
     switch (activeSection) {
