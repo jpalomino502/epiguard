@@ -57,47 +57,35 @@ export default function LoginForm({
               {showPassword ? <EyeOff className="text-gray-400" /> : <Eye className="text-gray-400" />}
             </button>
           </motion.div>
-        </div>
 
-        <motion.button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300 mt-6"
-          whileHover={{ scale: 1.05 }} 
-          transition={{ duration: 0.2 }}
-        >
-          Iniciar Sesión
-        </motion.button>
+          {error && <div className="text-red-500 text-sm mt-2">{error}</div>} {/* Mostrar el error */}
 
-        {error && (
-          <motion.div
-            className="mt-4 text-red-500 text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {error}
-          </motion.div>
-        )}
-
-        <div className="mt-4 text-center">
           <button
-            type="button"
-            onClick={switchToForgotPassword}
-            className="text-blue-500 hover:underline"
+            type="submit"
+            className="w-full py-2 px-4 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
-            ¿Olvidaste tu contraseña?
+            Iniciar sesión
           </button>
-        </div>
 
-        <div className="mt-4 text-center">
-          ¿No tienes una cuenta?{' '}
-          <button
-            type="button"
-            onClick={switchToRegister}
-            className="text-blue-500 hover:underline"
-          >
-            Regístrate
-          </button>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={switchToForgotPassword}
+              className="text-sm text-blue-500 hover:text-blue-600"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+            <div className="text-sm mt-2">
+              ¿No tienes cuenta?{' '}
+              <button
+                type="button"
+                onClick={switchToRegister}
+                className="text-blue-500 hover:text-blue-600"
+              >
+                Regístrate aquí
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </motion.div>

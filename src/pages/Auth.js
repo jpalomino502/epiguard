@@ -9,6 +9,7 @@ export default function AuthPage() {
   const [authState, setAuthState] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
+  const [error, setError] = useState(null);
 
   const { isAuthenticated, login, register, resetPassword } = useAuth();
   const navigate = useNavigate();
@@ -26,12 +27,18 @@ export default function AuthPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (authState === 'login') {
-      await login(formData);
-    } else if (authState === 'register') {
-      await register(formData);
-    } else if (authState === 'forgotPassword') {
-      await resetPassword(formData.email);
+    setError(null); // Limpiar el error antes de enviar el formulario
+
+    try {
+      if (authState === 'login') {
+        await login(formData);
+      } else if (authState === 'register') {
+        await register(formData);
+      } else if (authState === 'forgotPassword') {
+        await resetPassword(formData.email);
+      }
+    } catch (err) {
+      setError(err.message || 'Ocurrió un error. Por favor, intenta nuevamente.');
     }
   };
 
@@ -47,6 +54,7 @@ export default function AuthPage() {
             setShowPassword={setShowPassword}
             switchToRegister={() => setAuthState('register')}
             switchToForgotPassword={() => setAuthState('forgotPassword')}
+            error={error}  // Pasamos el error al formulario
           />
         );
       case 'register':
@@ -58,6 +66,7 @@ export default function AuthPage() {
             showPassword={showPassword}
             setShowPassword={setShowPassword}
             switchToLogin={() => setAuthState('login')}
+            error={error}  // Pasamos el error al formulario
           />
         );
       case 'forgotPassword':
@@ -67,6 +76,7 @@ export default function AuthPage() {
             handleInputChange={handleInputChange}
             handleSubmit={handleSubmit}
             switchToLogin={() => setAuthState('login')}
+            error={error}  // Pasamos el error al formulario
           />
         );
       default:

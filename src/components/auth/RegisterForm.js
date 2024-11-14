@@ -15,7 +15,6 @@ export default function RegisterForm({
       <h2 className="text-2xl font-bold mb-6">Registro</h2>
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
-          {/* Name Input */}
           <motion.div
             className="relative"
             initial={{ opacity: 0, x: -20 }}
