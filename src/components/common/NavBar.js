@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, AlertTriangle, FileText, Settings } from 'lucide-react';
+import { Map, AlertTriangle, FileText, Settings, UserCheck } from 'lucide-react'; // Importamos el ícono de UserCheck
 import { motion } from 'framer-motion';
 
 export default function NavBar({ activeSection, setActiveSection }) {
@@ -56,6 +56,20 @@ export default function NavBar({ activeSection, setActiveSection }) {
           >
             <Settings className="w-6 h-6" />
             <span className="text-xs">Configuración</span>
+          </motion.button>
+        </li>
+        {/* Nuevo botón de Membresía */}
+        <li>
+          <motion.button
+            onClick={() => setActiveSection('membresia')}
+            className={`p-2 flex flex-col items-center rounded-lg ${activeSection === 'membresia' ? 'text-[#4A628A] bg-[#bfe4f8]' : 'text-gray-600'}`}
+            whileHover={{ scale: 1.1 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
+            <UserCheck className="w-6 h-6" />
+            <span className="text-xs">Membresía</span>
           </motion.button>
         </li>
       </ul>

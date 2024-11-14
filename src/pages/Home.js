@@ -7,6 +7,7 @@ import MapSection from '../components/sections/MapSection';
 import AlertsSection from '../components/sections/AlertsSection'; 
 import ReportSection from '../components/sections/ReportSection'; 
 import ConfiguracionSection from '../components/sections/ConfiguracionSection'; 
+import MembresiaSection from '../components/sections/MembershipCard';
 
 export default function Home() { 
   const [activeSection, setActiveSection] = useState('map'); 
@@ -83,6 +84,8 @@ export default function Home() {
         return <ReportSection />;
       case 'configuracion':
         return <ConfiguracionSection />;
+      case 'membresia':
+        return <MembresiaSection />;
       default:
         return null;
     }
