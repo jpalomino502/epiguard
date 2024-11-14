@@ -1,0 +1,22 @@
+[debug] [2024-11-14T05:37:14.512Z] ----------------------------------------------------------------------
+[debug] [2024-11-14T05:37:14.519Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\-\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2024-11-14T05:37:14.520Z] CLI Version:   13.25.0
+[debug] [2024-11-14T05:37:14.520Z] Platform:      win32
+[debug] [2024-11-14T05:37:14.521Z] Node Version:  v20.14.0
+[debug] [2024-11-14T05:37:14.521Z] Time:          Thu Nov 14 2024 00:37:14 GMT-0500 (hora estándar de Colombia)
+[debug] [2024-11-14T05:37:14.521Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-11-14T05:37:14.640Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-11-14T05:37:14.641Z] > authorizing via signed-in user (joseph.contreras.2006@gmail.com)
+[debug] [2024-11-14T05:37:14.641Z] [iam] checking project betaepiguard for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2024-11-14T05:37:14.643Z] Checked if tokens are valid: true, expires at: 1731565904943
+[debug] [2024-11-14T05:37:14.643Z] Checked if tokens are valid: true, expires at: 1731565904943
+[debug] [2024-11-14T05:37:14.645Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/betaepiguard:testIamPermissions [none]
+[debug] [2024-11-14T05:37:14.645Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/betaepiguard:testIamPermissions x-goog-quota-user=projects/betaepiguard
+[debug] [2024-11-14T05:37:14.645Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/betaepiguard:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-11-14T05:37:15.598Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/betaepiguard:testIamPermissions 200
+[debug] [2024-11-14T05:37:15.598Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/betaepiguard:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-11-14T05:37:15.599Z] Checked if tokens are valid: true, expires at: 1731565904943
+[debug] [2024-11-14T05:37:15.599Z] Checked if tokens are valid: true, expires at: 1731565904943
+[debug] [2024-11-14T05:37:15.600Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/betaepiguard [none]
+[debug] [2024-11-14T05:37:16.127Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/betaepiguard 200
