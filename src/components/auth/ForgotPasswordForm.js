@@ -21,7 +21,7 @@ export default function ForgotPasswordForm({ formData, handleInputChange, handle
         </div>
         <button
           type="submit"
-          className="w-full bg-yellow-500 text-white py-2 rounded-md hover:bg-yellow-600 transition duration-300 mt-6"
+          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300 mt-6"
         >
           Enviar instrucciones
         </button>

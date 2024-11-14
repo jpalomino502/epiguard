@@ -1,42 +1,70 @@
+// src/components/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { auth, db } from '../../firebaseConfig';  // Importa db desde firebaseConfig
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';  // Importa Firestore funciones
 
-// Crear el contexto de autenticación
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // Leer el estado de autenticación desde localStorage
-  const storedIsAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(storedIsAuthenticated);
-  const [user, setUser] = useState(storedUser);
-
-  const login = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-    // Guardar el estado en localStorage
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('user', JSON.stringify(userData)); // Guarda los datos del usuario
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    // Limpiar el estado en localStorage
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('user');
-  };
-
-  // Usar useEffect para limpiar el estado cuando el usuario cierre sesión
   useEffect(() => {
-    if (!isAuthenticated) {
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('user');
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  const login = async ({ email, password }) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
     }
-  }, [isAuthenticated]);
+  };
+
+  const register = async ({ email, password, name }) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        name: name,
+        email: email,
+      });
+
+    } catch (error) {
+      console.error("Error al registrarse:", error);
+    }
+  };
+
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Correo de recuperación enviado");
+    } catch (error) {
+      console.error("Error al enviar correo de recuperación:", error);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, register, resetPassword, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

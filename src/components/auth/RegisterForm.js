@@ -54,7 +54,7 @@ export default function RegisterForm({ formData, handleInputChange, handleSubmit
         </div>
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition duration-300 mt-6"
+          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300 mt-6"
         >
           Registrarse
         </button>

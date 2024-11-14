@@ -7,41 +7,46 @@ import ReportSection from '../components/sections/ReportSection';
 import ConfiguracionSection from '../components/sections/ConfiguracionSection';
 
 export default function Home() {
+  // Inicializar activeSection desde localStorage solo una vez
   const [activeSection, setActiveSection] = useState(() => {
-    // Recuperamos el valor guardado en el localStorage, si existe
     const savedSection = localStorage.getItem('activeSection');
-    return savedSection ? savedSection : 'map';  // Si no existe, usamos 'map' como valor predeterminado
+    return savedSection || 'map'; // Valor predeterminado si no hay savedSection
   });
-  const [symptoms, setSymptoms] = useState('');
-  const [reports, setReports] = useState([]);
+
   const [alerts, setAlerts] = useState([]);
 
-  // Guardar el estado de activeSection en localStorage cada vez que cambie
+  // Usar useEffect para cargar el valor desde localStorage solo una vez (al montar)
   useEffect(() => {
-    localStorage.setItem('activeSection', activeSection);
-  }, [activeSection]);
+    const savedSection = localStorage.getItem('activeSection');
+    if (savedSection && savedSection !== activeSection) {
+      setActiveSection(savedSection); // Solo actualiza si el valor es diferente
+    }
+  }, []); // Ejecuta solo una vez al montar el componente
 
-  const handleSymptomReport = (e) => {
-    e.preventDefault();
-    const newReport = { id: Date.now(), symptoms, location: 'Ciudad Ejemplo' };
-    setReports([...reports, newReport]);
-    setSymptoms('');
+  // Usar useEffect para guardar activeSection en localStorage solo cuando cambie
+  useEffect(() => {
+    if (activeSection) {
+      localStorage.setItem('activeSection', activeSection); // Solo guarda en localStorage si activeSection tiene un valor válido
+    }
+  }, [activeSection]); // Solo ejecuta cuando activeSection cambie
 
-    setTimeout(() => {
-      if (symptoms.toLowerCase().includes('fiebre')) {
-        setAlerts([...alerts, { id: Date.now(), message: 'Posible brote de gripe en tu área' }]);
-      }
-    }, 1000);
+  // Función para agregar alertas a la lista
+  const addAlert = (alertMessage) => {
+    setAlerts((prevAlerts) => [
+      ...prevAlerts,
+      { id: Date.now(), message: alertMessage },
+    ]);
   };
 
+  // Función para renderizar la sección activa
   const renderSection = () => {
     switch (activeSection) {
       case 'map':
-        return <MapSection />;
+        return <MapSection addAlert={addAlert} />;
       case 'alerts':
         return <AlertsSection alerts={alerts} />;
       case 'report':
-        return <ReportSection symptoms={symptoms} setSymptoms={setSymptoms} handleSymptomReport={handleSymptomReport} />;
+        return <ReportSection />;
       case 'configuracion':
         return <ConfiguracionSection />;
       default:

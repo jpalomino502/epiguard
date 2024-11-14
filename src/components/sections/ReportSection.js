@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import ReactMarkdown from 'react-markdown';
+import { db } from '../../firebaseConfig';
+import { collection, addDoc } from "firebase/firestore";
 
 const apiKey = process.env.REACT_APP_API_KEY_IA;
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -14,7 +16,7 @@ const safetySettings = [
 
 const generationConfig = {
   stopSequences: ["red"],
-  maxOutputTokens: 100,
+  maxOutputTokens: 150,
   temperature: 0.5,
   topP: 0.1,
   topK: 16,
@@ -58,16 +60,44 @@ export default function Component() {
     event.preventDefault();
     setLoading(true);
 
+    // Combinar síntomas seleccionados y personalizados
     const allSymptoms = [...selectedSymptoms, customSymptoms].filter(Boolean).join(", ");
-    const chat = model.startChat({
-      history: [],
-    });
 
     try {
-      const result = await chat.sendMessage(`Basado en los siguientes síntomas, por favor proporciona una recomendación médica general: ${allSymptoms}`);
+      // Obtener la localización del usuario
+      const getUserLocation = () => {
+        return new Promise((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error("Geolocalización no soportada"));
+          } else {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+                resolve({ latitude, longitude });
+              },
+              (error) => reject(error)
+            );
+          }
+        });
+      };
+
+      const location = await getUserLocation(); // Esperar la localización del usuario
+
+      // Crear reporte con la IA (sin guardar la recomendación en Firestore)
+      const chat = model.startChat({ history: [] });
+      const result = await chat.sendMessage(`Basado en los siguientes síntomas, por favor proporciona una recomendación médica general breve: ${allSymptoms}`);
       const response = await result.response;
       const text = await response.text();
+
       setResponseMessage(text || "Reporte enviado exitosamente");
+
+      // Guardar solo datos de síntomas y localización en Firestore
+      await addDoc(collection(db, 'reports'), {
+        symptoms: allSymptoms,
+        location: { lt: location.latitude, lg: location.longitude },
+        timestamp: new Date()
+      });
+
     } catch (error) {
       console.error('Error al enviar el reporte:', error);
       setResponseMessage('Hubo un error al enviar el reporte');

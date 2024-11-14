@@ -1,3 +1,4 @@
+// src/pages/AuthPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/context/AuthContext';
@@ -10,7 +11,7 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
 
-  const { isAuthenticated, login, setTestUser } = useAuth();
+  const { isAuthenticated, login, register, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,28 +20,19 @@ export default function AuthPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  useEffect(() => {
-    const testUser = {
-      email: 'testuser@example.com',
-      password: 'password123',
-      name: 'Usuario de Prueba'
-    };
-
-    if (setTestUser) {
-      setTestUser(testUser);
-    }
-  }, [setTestUser]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (authState === 'login') {
-      login(formData);
-      console.log('Usuario autenticado:', formData);
+      await login(formData);
+    } else if (authState === 'register') {
+      await register(formData);
+    } else if (authState === 'forgotPassword') {
+      await resetPassword(formData.email);
     }
   };
 
