@@ -3,7 +3,6 @@ import { GoogleMap, useLoadScript, HeatmapLayer, Marker } from '@react-google-ma
 import { db, collection, getDocs } from '../../firebaseConfig';
 import userIcon from '../../assets/user.svg';
 
-// Definimos las bibliotecas fuera del componente
 const MAP_LIBRARIES = ['visualization', 'geometry'];
 
 const mapContainerStyle = {
