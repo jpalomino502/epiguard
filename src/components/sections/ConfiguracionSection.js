@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, MapPin, LogOut } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 export default function ConfiguracionSection() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -67,7 +68,13 @@ export default function ConfiguracionSection() {
     <div className="space-y-8 max-w-md mx-auto px-4 py-6">
       <h2 className="text-2xl font-semibold text-gray-800">Configuración</h2>
       
-      <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
+      <motion.div
+        className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="flex items-center space-x-3">
           <Bell className="text-gray-600 w-6 h-6" />
           <span className="text-lg text-gray-700 font-medium">Notificaciones</span>
@@ -78,9 +85,15 @@ export default function ConfiguracionSection() {
         >
           {notificationsEnabled ? 'Activadas' : 'Desactivadas'}
         </button>
-      </div>
+      </motion.div>
       
-      <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
+      <motion.div
+        className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="flex items-center space-x-3">
           <MapPin className="text-gray-600 w-6 h-6" />
           <span className="text-lg text-gray-700 font-medium">Acceso a Ubicación</span>
@@ -91,9 +104,15 @@ export default function ConfiguracionSection() {
         >
           {locationAccess ? 'Activado' : 'Desactivado'}
         </button>
-      </div>
+      </motion.div>
 
-      <div className="mt-6 flex justify-center">
+      <motion.div
+        className="mt-6 flex justify-center"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.3 }}
+      >
         <button
           onClick={handleLogout}
           className="py-3 px-8 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition duration-300 flex items-center space-x-3"
@@ -101,7 +120,7 @@ export default function ConfiguracionSection() {
           <LogOut className="w-5 h-5" />
           <span className="text-lg">Cerrar Sesión</span>
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/ge
 import ReactMarkdown from 'react-markdown';
 import { db } from '../../firebaseConfig';
 import { collection, addDoc } from "firebase/firestore";
+import { motion } from 'framer-motion';
 
 const apiKey = process.env.REACT_APP_API_KEY_IA;
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -49,8 +50,8 @@ export default function Component() {
 
   const handleSymptomChange = (e) => {
     const symptom = e.target.value;
-    setSelectedSymptoms(prev => 
-      prev.includes(symptom) 
+    setSelectedSymptoms(prev =>
+      prev.includes(symptom)
         ? prev.filter(s => s !== symptom)
         : [...prev, symptom]
     );
@@ -60,11 +61,9 @@ export default function Component() {
     event.preventDefault();
     setLoading(true);
 
-    // Combinar síntomas seleccionados y personalizados
     const allSymptoms = [...selectedSymptoms, customSymptoms].filter(Boolean).join(", ");
 
     try {
-      // Obtener la localización del usuario
       const getUserLocation = () => {
         return new Promise((resolve, reject) => {
           if (!navigator.geolocation) {
@@ -81,9 +80,8 @@ export default function Component() {
         });
       };
 
-      const location = await getUserLocation(); // Esperar la localización del usuario
+      const location = await getUserLocation();
 
-      // Crear reporte con la IA (sin guardar la recomendación en Firestore)
       const chat = model.startChat({ history: [] });
       const result = await chat.sendMessage(`Basado en los siguientes síntomas, por favor proporciona una recomendación médica general breve: ${allSymptoms}`);
       const response = await result.response;
@@ -91,7 +89,6 @@ export default function Component() {
 
       setResponseMessage(text || "Reporte enviado exitosamente");
 
-      // Guardar solo datos de síntomas y localización en Firestore
       await addDoc(collection(db, 'reports'), {
         symptoms: allSymptoms,
         location: { lt: location.latitude, lg: location.longitude },
@@ -108,7 +105,13 @@ export default function Component() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="bg-white rounded-lg shadow-xl p-6 md:p-8">
+      <motion.div
+        className="bg-white rounded-lg shadow-xl p-6 md:p-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">Reporte y Asistente Médico Virtual</h1>
         <form onSubmit={handleSymptomReport} className="space-y-6">
           <div>
@@ -163,14 +166,20 @@ export default function Component() {
         </form>
 
         {responseMessage && (
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <motion.div
+            className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
             <h2 className="text-lg font-semibold text-gray-800 mb-2">Recomendación:</h2>
             <div className="text-gray-600">
               <ReactMarkdown>{responseMessage}</ReactMarkdown>
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

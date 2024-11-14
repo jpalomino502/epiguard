@@ -1,8 +1,7 @@
-// src/components/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth, db } from '../../firebaseConfig';  // Importa db desde firebaseConfig
+import { auth, db } from '../firebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';  // Importa Firestore funciones
+import { doc, setDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 

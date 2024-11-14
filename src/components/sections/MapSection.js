@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, useLoadScript, HeatmapLayer, Marker } from '@react-google-maps/api';
 import { db, collection, getDocs, doc, setDoc } from '../../firebaseConfig';
-import { query, where } from 'firebase/firestore';  // Importar query y where desde firebase/firestore
-import { useAuth } from '../context/AuthContext';
+import { query, where } from 'firebase/firestore'; 
+import { useAuth } from '../../context/AuthContext';
 import userIcon from '../../assets/user.svg';
 
-// Haversine formula to calculate distance between two points
 const haversineDistance = (lat1, lng1, lat2, lng2) => {
-  const R = 6371; // Radius of the Earth in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLng = (lng2 - lng1) * (Math.PI / 180);
   const a =
@@ -15,17 +14,16 @@ const haversineDistance = (lat1, lng1, lat2, lng2) => {
     Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
     Math.sin(dLng / 2) * Math.sin(dLng / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c; // Distance in km
+  const distance = R * c;
   return distance;
 };
 
-// Agrupar zonas cercanas
 const groupNearbyZones = (heatmapData, proximityThreshold = 0.5) => {
   const groups = [];
   const visited = new Set();
 
   for (let i = 0; i < heatmapData.length; i++) {
-    if (visited.has(i)) continue; // Skip already visited zones
+    if (visited.has(i)) continue;
 
     const group = [heatmapData[i]];
     visited.add(i);
@@ -42,11 +40,11 @@ const groupNearbyZones = (heatmapData, proximityThreshold = 0.5) => {
 
       if (distance <= proximityThreshold) {
         group.push(heatmapData[j]);
-        visited.add(j); // Mark this zone as visited
+        visited.add(j);
       }
     }
 
-    groups.push(group); // Add the combined group of zones
+    groups.push(group);
   }
 
   return groups;
@@ -99,7 +97,6 @@ export default function MapSection() {
   }, []);
 
   useEffect(() => {
-    // Consultar puntos de calor desde Firestore
     const fetchHeatmapData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'reports'));

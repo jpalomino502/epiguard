@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'; 
 import { db, collection, getDocs, doc, updateDoc } from '../firebaseConfig'; 
-import { useAuth } from '../components/context/AuthContext'; 
+import { useAuth } from '../context/AuthContext'; 
 import Header from '../components/common/Header'; 
 import NavBar from '../components/common/NavBar'; 
 import MapSection from '../components/sections/MapSection'; 
