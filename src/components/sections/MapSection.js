@@ -64,13 +64,13 @@ export default function MapSection({ addAlert }) {
     if (Notification.permission !== 'granted') {
       Notification.requestPermission();
     }
-
+  
     if (
       userLocation &&
       heatmapData.length > 0 &&
       window.google &&
       window.google.maps.geometry &&
-      !alertActive // Asegura que no haya otra alerta activa
+      !alertActive
     ) {
       heatmapData.some((point) => {
         const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
@@ -78,32 +78,26 @@ export default function MapSection({ addAlert }) {
           point
         );
         const pointKey = `${point.lat()}-${point.lng()}`;
-
-        // Solo mostrar alerta si está dentro del radio y no ha sido alertada antes
+  
         if (distance < PROXIMITY_RADIUS && !alertedLocations[pointKey]) {
           const alertMessage = "Estás cerca de una zona de calor de epidemia";
 
-          if (Notification.permission === 'granted') {
-            new Notification(alertMessage);
-          }
-
           addAlert(alertMessage);
-          setAlertActive(true); // Marca que hay una alerta activa
-
+          setAlertActive(true); 
+  
           const newAlertedLocations = { ...alertedLocations, [pointKey]: true };
           setAlertedLocations(newAlertedLocations);
           localStorage.setItem('alertedLocations', JSON.stringify(newAlertedLocations));
-
-          // Limpia la alerta activa después de un tiempo (ejemplo: 10 segundos)
+  
           setTimeout(() => setAlertActive(false), 10000);
-
-          // Termina el bucle después de enviar una alerta
+  
           return true;
         }
         return false;
       });
     }
   }, [userLocation, heatmapData, alertedLocations, addAlert, alertActive]);
+  
 
   if (!isLoaded) return <div>Cargando mapa...</div>;
 
